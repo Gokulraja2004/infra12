@@ -1,43 +1,49 @@
 pipeline {
     agent any
 
-    environments {
-        ENV="${env.BRANCH_NAME}"
-        TF_WORKDIR="Environments/${env.BRANCH_NAME}"
+    environment {
+        ENV = "${env.BRANCH_NAME}"
+        TF_WORKDIR = "Environments/${env.BRANCH_NAME}"
     }
 
     stages {
-        stage ('checkout') {
+
+        stage('Checkout') {
             steps {
-                gitbranch: ${env.BRANCH_NAME},
-                url:'https://github.com/Gokulraja2004/infra12.git'
+                git branch: env.BRANCH_NAME,
+                    url: 'https://github.com/Gokulraja2004/infra12.git'
             }
         }
 
-        stage ('terraform init') {
+        stage('Terraform Init') {
             steps {
-                dir("${TF_WORKDIR}")
-                sh 'terraform init'
+                dir("${TF_WORKDIR}") {
+                    sh 'terraform init'
+                }
             }
         }
 
-        stage ('terraform plan') {
+        stage('Terraform Plan') {
             steps {
-                dir("${TF_WORKDIR}")
-                sh 'terraform plan -out=tfplan'
-                sh 'terraform show -no-color tfplan > tfplan.txt'
-                sh 'cat tfplan.txt'
+                dir("${TF_WORKDIR}") {
+                    sh 'terraform plan -out=tfplan'
+                    sh 'terraform show -no-color tfplan > tfplan.txt'
+                    sh 'cat tfplan.txt'
+                }
             }
         }
-        stage ('approval') {
+
+        stage('Approval') {
             steps {
-                input message : "Approve deployment or production?": ok "deploy"
+                input message: "Approve deployment to ${env.BRANCH_NAME}?", ok: "Deploy"
             }
         }
-        stage('apply') {
+
+        stage('Terraform Apply') {
             steps {
-                dir("${TF_WORKDIR}")
-                sh "terraform apply -auto-approve tfplan"
+                dir("${TF_WORKDIR}") {
+                    sh 'terraform apply -auto-approve tfplan'
+                }
             }
         }
     }
