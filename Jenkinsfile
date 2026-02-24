@@ -10,7 +10,7 @@ pipeline {
         stage ('checkout') {
             steps {
                 gitbranch: ${env.BRANCH_NAME},
-                url:'https://github.com/Gokulraja2004/CI-CD_pipeline.git'
+                url:'https://github.com/Gokulraja2004/infra12.git'
             }
         }
 
