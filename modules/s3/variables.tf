@@ -6,7 +6,7 @@ variable "bucket1" {
 
 variable "env" {
     type = string
-    description = "development"
+    description = "deve"
   
 }
 variable "name1" {
